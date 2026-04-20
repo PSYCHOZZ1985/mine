@@ -5,7 +5,7 @@ from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-from src.main import build_message, load_settings, main
+from src.main import build_message, generate_report, load_settings, main
 
 
 class TestSettings(unittest.TestCase):
@@ -41,6 +41,21 @@ class TestSettings(unittest.TestCase):
             message,
             "demo is ready. Log level: DEBUG. Debug mode: enabled.",
         )
+
+    def test_generate_report_uses_settings(self) -> None:
+        settings = {
+            "app_name": "demo",
+            "debug": False,
+            "log_level": "warning",
+        }
+
+        report = generate_report(settings)
+
+        self.assertIn("Configuration report", report)
+        self.assertIn("Application: demo", report)
+        self.assertIn("Debug: disabled", report)
+        self.assertIn("Log level: WARNING", report)
+        self.assertIn("Configuration status: valid", report)
 
     def test_load_settings_rejects_invalid_json(self) -> None:
         config_path = self.write_config("{broken json")
@@ -82,6 +97,41 @@ class TestSettings(unittest.TestCase):
             json.loads(stdout.getvalue()),
             {"app_name": "demo", "debug": False, "log_level": "warning"},
         )
+
+    def test_output_cli_saves_report_to_file(self) -> None:
+        config_path = self.write_config(
+            '{"app_name": "demo", "debug": false, "log_level": "warning"}',
+        )
+        output_path = config_path.parent / "report.txt"
+        stdout = io.StringIO()
+        stderr = io.StringIO()
+
+        with redirect_stdout(stdout), redirect_stderr(stderr):
+            exit_code = main(
+                ["--config", str(config_path), "--output", str(output_path)],
+            )
+
+        self.assertEqual(exit_code, 0)
+        self.assertIn("Report saved", stdout.getvalue())
+        self.assertEqual(stderr.getvalue(), "")
+        self.assertIn("Application: demo", output_path.read_text(encoding="utf-8"))
+
+    def test_output_cli_reports_invalid_output_path(self) -> None:
+        config_path = self.write_config(
+            '{"app_name": "demo", "debug": true, "log_level": "info"}',
+        )
+        output_path = config_path.parent
+        stdout = io.StringIO()
+        stderr = io.StringIO()
+
+        with redirect_stdout(stdout), redirect_stderr(stderr):
+            exit_code = main(
+                ["--config", str(config_path), "--output", str(output_path)],
+            )
+
+        self.assertEqual(exit_code, 1)
+        self.assertEqual(stdout.getvalue(), "")
+        self.assertIn("Output error", stderr.getvalue())
 
 
 if __name__ == "__main__":

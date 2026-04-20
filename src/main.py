@@ -49,9 +49,26 @@ def build_message(settings: dict[str, Any]) -> str:
     return f"{app_name} is ready. Log level: {log_level}. Debug mode: {debug_status}."
 
 
+def generate_report(settings: dict[str, Any]) -> str:
+    app_name = str(settings["app_name"])
+    log_level = str(settings["log_level"]).upper()
+    debug_status = "enabled" if settings["debug"] else "disabled"
+
+    return "\n".join(
+        (
+            "Configuration report",
+            "====================",
+            f"Application: {app_name}",
+            f"Debug: {debug_status}",
+            f"Log level: {log_level}",
+            "Configuration status: valid",
+        )
+    )
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Load JSON settings and print application status.",
+        description="Load JSON settings and print a configuration report.",
     )
     parser.add_argument(
         "--config",
@@ -68,6 +85,11 @@ def build_parser() -> argparse.ArgumentParser:
         "--show-config",
         action="store_true",
         help="Print the loaded config in a readable format.",
+    )
+    parser.add_argument(
+        "--output",
+        type=Path,
+        help="Path to a text file where the report should be saved.",
     )
     return parser
 
@@ -90,7 +112,19 @@ def main(argv: Sequence[str] | None = None) -> int:
         print(json.dumps(settings, indent=2, ensure_ascii=False))
         return 0
 
-    print(build_message(settings))
+    report = generate_report(settings)
+
+    if args.output is not None:
+        try:
+            args.output.write_text(report + "\n", encoding="utf-8")
+        except OSError as error:
+            print(f"Output error: could not write report to {args.output}: {error}", file=sys.stderr)
+            return 1
+
+        print(f"Report saved: {args.output}")
+        return 0
+
+    print(report)
     return 0
 
 
