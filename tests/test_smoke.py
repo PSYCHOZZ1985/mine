@@ -1,3 +1,4 @@
+<<<<<<< ours
 import io
 import json
 import unittest
@@ -132,6 +133,16 @@ class TestSettings(unittest.TestCase):
         self.assertEqual(exit_code, 1)
         self.assertEqual(stdout.getvalue(), "")
         self.assertIn("Output error", stderr.getvalue())
+=======
+import unittest
+
+from src.main import main
+
+
+class TestSmoke(unittest.TestCase):
+    def test_main_exists(self) -> None:
+        self.assertTrue(callable(main))
+>>>>>>> theirs
 
 
 if __name__ == "__main__":

@@ -1,3 +1,4 @@
+<<<<<<< ours
 # Python Settings CLI
 
 Минимальный CLI-инструмент, который загружает настройки из JSON-конфига,
@@ -11,19 +12,33 @@
 - показывать загруженный конфиг через `--show-config`;
 - сохранять итоговый отчёт в файл через `--output`;
 - понятно сообщать об ошибках файла, JSON и обязательных полей.
+=======
+# Starter Python Project
+
+Минимальный аккуратный стартовый шаблон Python-проекта.
+>>>>>>> theirs
 
 ## Структура
 
 - `src/main.py` — точка входа приложения.
+<<<<<<< ours
 - `tests/test_smoke.py` — тесты загрузки конфига, ошибок и CLI-режимов.
 - `docs/structure.md` — краткое описание структуры проекта.
 - `config/settings.example.json` — пример конфигурации.
 
 ## Обычный запуск
+=======
+- `tests/test_smoke.py` — базовый smoke-тест.
+- `docs/structure.md` — краткое описание структуры проекта.
+- `config/settings.example.json` — пример конфигурации.
+
+## Запуск
+>>>>>>> theirs
 
 ```bash
 python src/main.py
 ```
+<<<<<<< ours
 
 Если аргументы не переданы, приложение читает `config/settings.example.json` и
 печатает отчёт в консоль.
@@ -92,3 +107,5 @@ python src/main.py --config path/to/settings.json --output report.txt
 ```bash
 python -m unittest discover -s tests
 ```
+=======
+>>>>>>> theirs

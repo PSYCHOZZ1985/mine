@@ -1,3 +1,4 @@
+<<<<<<< ours
 import argparse
 import json
 import sys
@@ -130,3 +131,11 @@ def main(argv: Sequence[str] | None = None) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+=======
+def main() -> None:
+    print("Project is ready")
+
+
+if __name__ == "__main__":
+    main()
+>>>>>>> theirs
